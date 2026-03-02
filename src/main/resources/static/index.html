@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVLab 实验室助手</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/es/highlight.min.js"></script>
+</head>
+<body>
+<div class="app-layout">
+    <!-- 左侧边栏 -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2 class="sidebar-title">CVLab 助手</h2>
+        </div>
+        <div class="sidebar-content">
+            <button class="new-chat-btn" id="newChatBtn">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <span>新建对话</span>
+            </button>
+            <div class="chat-history-section">
+                <div class="history-header"><span>近期对话</span></div>
+                <div class="chat-history-list" id="chatHistoryList"></div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 顶部工具栏 -->
+        <div class="top-toolbar">
+            <!-- 模式选择 -->
+            <div class="mode-tabs">
+                <button class="mode-tab active" data-mode="chat">普通对话</button>
+                <button class="mode-tab" data-mode="agent">多 Agent</button>
+                <button class="mode-tab" data-mode="code">代码助手</button>
+            </div>
+            <!-- 共享 Session -->
+            <div class="share-actions">
+                <button class="share-btn" id="createRoomBtn" title="创建共享房间">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2"/></svg>
+                    <span>创建房间</span>
+                </button>
+                <button class="share-btn" id="joinRoomBtn" title="加入共享房间">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>加入房间</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Memory 状态栏 -->
+        <div class="memory-bar" id="memoryBar" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm-1-5h2v2h-2zm0-8h2v6h-2z" fill="currentColor"/></svg>
+            <span id="memoryBarText">对话轮数: 0</span>
+        </div>
+
+        <!-- 共享房间状态栏 -->
+        <div class="room-bar" id="roomBar" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <span id="roomBarText">共享房间: </span>
+            <button class="leave-room-btn" id="leaveRoomBtn">离开房间</button>
+        </div>
+
+        <!-- 对话区 -->
+        <div class="chat-container">
+            <div class="welcome-greeting" id="welcomeGreeting">
+                <p>你好！我是 CVLab 实验室智能助手</p>
+                <p class="welcome-sub">支持 RAG 知识检索 · 多 Agent 深度分析 · 代码助手 · 多人协作</p>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+
+            <div class="chat-input-container">
+                <div class="input-wrapper">
+                    <textarea id="messageInput" placeholder="输入问题..." rows="1" maxlength="2000" class="message-input"></textarea>
+                    <div class="input-bottom-bar">
+                        <div class="tools-btn-wrapper">
+                            <button class="tools-btn" id="toolsBtn">
+                                <svg class="tools-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/><circle cx="5" cy="12" r="1.5" fill="currentColor"/></svg>
+                            </button>
+                            <div class="tools-menu" id="toolsMenu">
+                                <div class="tools-menu-item" id="uploadFileItem">
+                                    <svg viewBox="0 0 24 24" fill="none"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    <span>上传文件</span>
+                                </div>
+                                <div class="tools-menu-item" id="clearHistoryItem">
+                                    <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    <span>清空历史</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="send-btn-circle" id="sendButton">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <input type="file" id="fileInput" accept=".txt,.md,.markdown" style="display:none">
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- 创建房间弹窗 -->
+<div class="modal-overlay" id="createRoomModal" style="display:none">
+    <div class="modal">
+        <div class="modal-header"><h3>创建共享房间</h3><button class="modal-close" id="closeCreateModal">×</button></div>
+        <div class="modal-body">
+            <p>房间码已生成，分享给其他人即可加入协作：</p>
+            <div class="room-code-display" id="roomCodeDisplay">--</div>
+            <button class="copy-btn" id="copyRoomCode">复制房间码</button>
+        </div>
+    </div>
+</div>
+
+<!-- 加入房间弹窗 -->
+<div class="modal-overlay" id="joinRoomModal" style="display:none">
+    <div class="modal">
+        <div class="modal-header"><h3>加入共享房间</h3><button class="modal-close" id="closeJoinModal">×</button></div>
+        <div class="modal-body">
+            <input type="text" id="roomCodeInput" placeholder="输入 6 位房间码" maxlength="6" class="room-input">
+            <input type="text" id="userIdInput" placeholder="你的昵称" maxlength="20" class="room-input">
+            <button class="join-btn" id="confirmJoinBtn">加入</button>
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

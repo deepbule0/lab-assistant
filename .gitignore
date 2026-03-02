@@ -1,0 +1,31 @@
+# Compiled
+target/
+*.class
+*.jar
+*.war
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# Environment & secrets
+.env
+.env.local
+application-local.yml
+application-prod.yml
+
+# Uploads (user data)
+uploads/
+
+# Milvus data volumes
+volumes/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

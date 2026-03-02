@@ -1,0 +1,54 @@
+server:
+  port: 9901
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+file:
+  upload:
+    path: ./uploads
+    allowed-extensions: txt,md
+
+milvus:
+  host: localhost
+  port: 19530
+  username: ""
+  password: ""
+  database: default
+  timeout: 10000
+
+spring:
+  ai:
+    dashscope:
+      api-key: ${DASHSCOPE_API_KEY:your-api-key-here}
+      chat:
+        options:
+          timeout: 180000
+      retry:
+        max-attempts: 3
+        backoff:
+          initial-interval: 2000
+          multiplier: 2
+          max-interval: 10000
+
+dashscope:
+  api:
+    key: ${DASHSCOPE_API_KEY:your-api-key-here}
+  embedding:
+    model: text-embedding-v4
+
+document:
+  chunk:
+    max-size: 800
+    overlap: 100
+
+rag:
+  top-k: 3
+  model: "qwen3-max"
+
+# Memory 自动总结配置
+memory:
+  threshold: 8   # 消息对数超过此值时触发自动总结
+  model: "qwen3-max"
