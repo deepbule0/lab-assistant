@@ -10,6 +10,9 @@ target/
 .vscode/
 *.swp
 
+# Claude Code
+.claude/
+
 # Environment & secrets
 .env
 .env.local
