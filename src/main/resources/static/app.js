@@ -1,5 +1,5 @@
-// CVLab Assistant 前端应用
-class CVLabApp {
+// Lab Assistant 前端应用
+class LabApp {
     constructor() {
         this.apiBase = 'http://localhost:9901/api';
         this.sessionId = this.loadOrCreateSessionId();
@@ -45,6 +45,7 @@ class CVLabApp {
         this.messageInput.addEventListener('input', () => this.autoResizeTextarea());
 
         document.getElementById('newChatBtn').addEventListener('click', () => this.newChat());
+        document.getElementById('clearHistoriesBtn').addEventListener('click', () => this.clearAllHistories());
         document.getElementById('toolsBtn').addEventListener('click', e => {
             e.stopPropagation();
             this.toolsMenu.classList.toggle('open');
@@ -446,14 +447,19 @@ class CVLabApp {
     }
 
     newChat() {
+        // 保存当前对话到历史记录
         if (this.currentChatHistory.length > 0) {
             this.saveChatToHistories();
         }
+
+        // 创建新的会话
         this.sessionId = this.generateSessionId();
         this.saveSessionId();
         this.currentChatHistory = [];
         this.messagePairCount = 0;
         this.hasMemory = false;
+
+        // 更新 UI
         this.chatMessages.innerHTML = '';
         this.welcomeGreeting.style.display = 'block';
         this.updateMemoryBar();
@@ -469,14 +475,31 @@ class CVLabApp {
         if (this.currentChatHistory.length === 0) return;
         const firstMsg = this.currentChatHistory.find(m => m.role === 'user');
         const title = firstMsg ? firstMsg.content.slice(0, 30) : '对话';
-        this.chatHistories.unshift({ id: this.sessionId, title, messages: [...this.currentChatHistory], time: Date.now() });
-        if (this.chatHistories.length > 20) this.chatHistories.pop();
-        localStorage.setItem('cvlab_histories', JSON.stringify(this.chatHistories));
+        const entry = { id: this.sessionId, title, messages: [...this.currentChatHistory], time: Date.now() };
+
+        // 若该 sessionId 已存在则更新，否则插入头部
+        const idx = this.chatHistories.findIndex(h => h.id === this.sessionId);
+        if (idx !== -1) {
+            this.chatHistories[idx] = entry;
+        } else {
+            this.chatHistories.unshift(entry);
+            if (this.chatHistories.length > 20) this.chatHistories.pop();
+        }
+
+        localStorage.setItem('lab_histories', JSON.stringify(this.chatHistories));
         this.renderChatHistoryList();
     }
 
     loadChatHistories() {
-        try { return JSON.parse(localStorage.getItem('cvlab_histories') || '[]'); } catch (_) { return []; }
+        try { return JSON.parse(localStorage.getItem('lab_histories') || '[]'); } catch (_) { return []; }
+    }
+
+    clearAllHistories() {
+        if (!confirm('确认清除所有历史记录？此操作不可恢复。')) return;
+        this.chatHistories = [];
+        localStorage.removeItem('lab_histories');
+        this.renderChatHistoryList();
+        this.showToast('历史记录已清除');
     }
 
     renderChatHistoryList() {
@@ -501,16 +524,16 @@ class CVLabApp {
     }
 
     loadOrCreateSessionId() {
-        return localStorage.getItem('cvlab_session') || this.generateSessionId();
+        return localStorage.getItem('lab_session') || this.generateSessionId();
     }
 
     saveSessionId() {
-        localStorage.setItem('cvlab_session', this.sessionId);
+        localStorage.setItem('lab_session', this.sessionId);
     }
 
     generateSessionId() {
         const id = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-        localStorage.setItem('cvlab_session', id);
+        localStorage.setItem('lab_session', id);
         return id;
     }
 
@@ -536,5 +559,5 @@ function copyCode(btn) {
 
 // 启动应用
 window.addEventListener('DOMContentLoaded', () => {
-    window.app = new CVLabApp();
+    window.app = new LabApp();
 });

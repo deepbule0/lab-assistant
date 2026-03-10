@@ -26,14 +26,20 @@ public class MilvusConfig {
 
     /**
      * 创建 MilvusServiceClient Bean
+     * 支持延迟初始化，避免启动时连接失败导致应用退出
      * 
-     * @return MilvusServiceClient 实例
+     * @return MilvusServiceClient 实例（延迟创建）
      */
     @Bean
     public MilvusServiceClient milvusServiceClient() {
         logger.info("正在初始化 Milvus 客户端...");
-        milvusClient = milvusClientFactory.createClient();
-        logger.info("Milvus 客户端初始化完成");
+        try {
+            milvusClient = milvusClientFactory.createClient();
+            logger.info("Milvus 客户端初始化完成");
+        } catch (Exception e) {
+            logger.warn("Milvus 客户端初始化失败，这可能影响 RAG 功能，但应用仍可启动: {}", e.getMessage());
+            // 不抛出异常，允许应用继续启动，稍后用户可以重试 RAG 操作
+        }
         return milvusClient;
     }
 

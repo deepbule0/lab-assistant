@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVLab 实验室助手</title>
+    <title>Lab 实验室助手</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
@@ -14,7 +14,7 @@
     <!-- 左侧边栏 -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h2 class="sidebar-title">CVLab 助手</h2>
+            <h2 class="sidebar-title">Lab 助手</h2>
         </div>
         <div class="sidebar-content">
             <button class="new-chat-btn" id="newChatBtn">
@@ -22,7 +22,12 @@
                 <span>新建对话</span>
             </button>
             <div class="chat-history-section">
-                <div class="history-header"><span>近期对话</span></div>
+                <div class="history-header">
+                    <span>近期对话</span>
+                    <button class="clear-histories-btn" id="clearHistoriesBtn" title="清除所有历史记录">
+                        <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                </div>
                 <div class="chat-history-list" id="chatHistoryList"></div>
             </div>
         </div>
@@ -67,7 +72,7 @@
         <!-- 对话区 -->
         <div class="chat-container">
             <div class="welcome-greeting" id="welcomeGreeting">
-                <p>你好！我是 CVLab 实验室智能助手</p>
+                <p>你好！我是 Lab 实验室智能助手</p>
                 <p class="welcome-sub">支持 RAG 知识检索 · 多 Agent 深度分析 · 代码助手 · 多人协作</p>
             </div>
             <div class="chat-messages" id="chatMessages"></div>

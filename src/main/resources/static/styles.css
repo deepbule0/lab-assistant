@@ -36,7 +36,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .new-chat-btn { width: 100%; display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.4); border-radius: 8px; color: #cdd6f4; cursor: pointer; font-size: 14px; transition: background 0.2s; }
 .new-chat-btn:hover { background: rgba(124,58,237,0.35); }
 .new-chat-btn svg { width: 16px; height: 16px; }
-.history-header { padding: 12px 8px 6px; color: #6c7086; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.history-header { padding: 12px 8px 6px; color: #6c7086; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; justify-content: space-between; }
+.clear-histories-btn { background: none; border: none; color: #6c7086; cursor: pointer; padding: 2px 4px; border-radius: 4px; line-height: 1; display: flex; align-items: center; opacity: 0; transition: opacity 0.15s, color 0.15s, background 0.15s; }
+.history-header:hover .clear-histories-btn { opacity: 1; }
+.clear-histories-btn:hover { color: #f38ba8; background: rgba(243,139,168,0.1); }
 .history-item { padding: 8px 12px; border-radius: 8px; cursor: pointer; color: var(--sidebar-text); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background 0.15s; }
 .history-item:hover { background: var(--sidebar-hover); }
 .history-item.active { background: rgba(124,58,237,0.25); }

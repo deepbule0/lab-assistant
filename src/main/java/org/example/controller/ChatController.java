@@ -8,8 +8,8 @@ import com.alibaba.cloud.ai.graph.OverAllState;
 import com.alibaba.cloud.ai.graph.agent.ReactAgent;
 import com.alibaba.cloud.ai.graph.streaming.OutputType;
 import com.alibaba.cloud.ai.graph.streaming.StreamingOutput;
-import lombok.Getter;
-import lombok.Setter;
+// import lombok.Getter;
+// import lombok.Setter;
 import org.example.service.ChatService;
 import org.example.service.LabAgentService;
 import org.example.service.MemoryService;
@@ -295,47 +295,83 @@ public class ChatController {
 
     // ==================== DTO ====================
 
-    @Getter @Setter
     public static class ChatRequest {
-        @com.fasterxml.jackson.annotation.JsonAlias({"id", "ID"}) private String Id;
-        @com.fasterxml.jackson.annotation.JsonAlias({"question", "QUESTION"}) private String Question;
-        public String getId() { return Id; }
-        public String getQuestion() { return Question; }
+        @com.fasterxml.jackson.annotation.JsonProperty("Id")
+        @com.fasterxml.jackson.annotation.JsonAlias({"id", "ID"})
+        private String id;
+
+        @com.fasterxml.jackson.annotation.JsonProperty("Question")
+        @com.fasterxml.jackson.annotation.JsonAlias({"question", "QUESTION"})
+        private String question;
+
+        public String getId() { return id; }
+        public void setId(String id) { this.id = id; }
+        public String getQuestion() { return question; }
+        public void setQuestion(String question) { this.question = question; }
     }
 
-    @Getter @Setter
     public static class ClearRequest {
-        @com.fasterxml.jackson.annotation.JsonAlias({"id", "ID"}) private String Id;
-        public String getId() { return Id; }
+        @com.fasterxml.jackson.annotation.JsonProperty("Id")
+        @com.fasterxml.jackson.annotation.JsonAlias({"id", "ID"})
+        private String id;
+
+        public String getId() { return id; }
+        public void setId(String id) { this.id = id; }
     }
 
-    @Getter @Setter
     public static class SharedJoinRequest {
         private String roomCode;
         private String userId;
+
+        public String getRoomCode() { return roomCode; }
+        public void setRoomCode(String roomCode) { this.roomCode = roomCode; }
+        public String getUserId() { return userId; }
+        public void setUserId(String userId) { this.userId = userId; }
     }
 
-    @Getter @Setter
     public static class SharedSendRequest {
         private String roomCode;
         private String userId;
         private String question;
+
+        public String getRoomCode() { return roomCode; }
+        public void setRoomCode(String roomCode) { this.roomCode = roomCode; }
+        public String getUserId() { return userId; }
+        public void setUserId(String userId) { this.userId = userId; }
+        public String getQuestion() { return question; }
+        public void setQuestion(String question) { this.question = question; }
     }
 
-    @Getter @Setter
     public static class SessionInfoResponse {
         private String sessionId;
         private int messagePairCount;
         private long createTime;
         private boolean hasMemory;
         private String memorySummary;
+
+        public String getSessionId() { return sessionId; }
+        public void setSessionId(String sessionId) { this.sessionId = sessionId; }
+        public int getMessagePairCount() { return messagePairCount; }
+        public void setMessagePairCount(int messagePairCount) { this.messagePairCount = messagePairCount; }
+        public long getCreateTime() { return createTime; }
+        public void setCreateTime(long createTime) { this.createTime = createTime; }
+        public boolean isHasMemory() { return hasMemory; }
+        public void setHasMemory(boolean hasMemory) { this.hasMemory = hasMemory; }
+        public String getMemorySummary() { return memorySummary; }
+        public void setMemorySummary(String memorySummary) { this.memorySummary = memorySummary; }
     }
 
-    @Getter @Setter
     public static class SseMessage {
         private String type;
         private String data;
         private Object extra;
+
+        public String getType() { return type; }
+        public void setType(String type) { this.type = type; }
+        public String getData() { return data; }
+        public void setData(String data) { this.data = data; }
+        public Object getExtra() { return extra; }
+        public void setExtra(Object extra) { this.extra = extra; }
 
         public static SseMessage content(String data) {
             SseMessage m = new SseMessage(); m.type = "content"; m.data = data; return m;
@@ -354,11 +390,17 @@ public class ChatController {
         }
     }
 
-    @Getter @Setter
     public static class ApiResponse<T> {
         private int code;
         private String message;
         private T data;
+
+        public int getCode() { return code; }
+        public void setCode(int code) { this.code = code; }
+        public String getMessage() { return message; }
+        public void setMessage(String message) { this.message = message; }
+        public T getData() { return data; }
+        public void setData(T data) { this.data = data; }
 
         public static <T> ApiResponse<T> success(T data) {
             ApiResponse<T> r = new ApiResponse<>(); r.code = 200; r.message = "success"; r.data = data; return r;

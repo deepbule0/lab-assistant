@@ -65,7 +65,7 @@ public class ChatService {
      */
     public String buildSystemPrompt(List<Map<String, String>> history, String memorySummary) {
         StringBuilder sb = new StringBuilder();
-        sb.append("你是 CVLab 实验室智能助手，可以：\n");
+        sb.append("你是 Lab 实验室智能助手，可以：\n");
         sb.append("- 获取当前时间（getCurrentDateTime）\n");
         sb.append("- 检索实验室内部文档知识库（queryInternalDocs）\n");
         sb.append("- 生成、解释、调试代码（generateCode / explainCode / debugCode）\n\n");
@@ -100,7 +100,7 @@ public class ChatService {
 
     public ReactAgent createReactAgent(DashScopeChatModel chatModel, String systemPrompt) {
         return ReactAgent.builder()
-                .name("cvlab_assistant")
+                .name("lab_assistant")
                 .model(chatModel)
                 .systemPrompt(systemPrompt)
                 .methodTools(buildMethodToolsArray())

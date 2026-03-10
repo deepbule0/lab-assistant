@@ -64,7 +64,7 @@ lab-assistant/
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/your-username/lab-assistant.git
+git clone https://github.com/deepbule0/lab-assistant.git
 cd lab-assistant
 ```
 

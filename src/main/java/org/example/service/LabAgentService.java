@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -81,7 +83,47 @@ public class LabAgentService {
         return state.value("planner_plan")
                 .filter(AssistantMessage.class::isInstance)
                 .map(AssistantMessage.class::cast)
-                .map(AssistantMessage::getText);
+                .map(AssistantMessage::getText)
+                .map(this::parseAgentResponse);
+    }
+
+    /**
+     * 解析 Agent 响应，提取干净的回答内容
+     * 如果响应是 JSON 格式且包含 decision=FINISH，则提取 answer 字段
+     * 否则直接返回原始文本
+     */
+    private String parseAgentResponse(String rawText) {
+        if (rawText == null || rawText.trim().isEmpty()) {
+            return rawText;
+        }
+
+        String trimmed = rawText.trim();
+
+        // 检查是否是 JSON 格式（以 { 开头）
+        if (!trimmed.startsWith("{")) {
+            return rawText;
+        }
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(trimmed);
+
+            // 检查是否包含 decision 字段且值为 FINISH
+            if (root.has("decision") && "FINISH".equalsIgnoreCase(root.get("decision").asText())) {
+                // 提取 answer 字段
+                if (root.has("answer")) {
+                    return root.get("answer").asText();
+                }
+            }
+
+            // 如果不是 FINISH 决策或没有 answer 字段，返回原始文本
+            return rawText;
+
+        } catch (Exception e) {
+            // JSON 解析失败，说明不是有效的 JSON，直接返回原始文本
+            logger.debug("无法解析为 JSON，返回原始文本: {}", e.getMessage());
+            return rawText;
+        }
     }
 
     private String buildPlannerPrompt() {
@@ -117,7 +159,10 @@ public class LabAgentService {
                 1. 当需要分析问题或重新制定策略时，调用 planner_agent。
                 2. 当 planner_agent 输出 decision=EXECUTE 时，调用 executor_agent 执行第一步。
                 3. 根据 executor_agent 的反馈，评估是否需要再次调用 planner_agent，直到 decision=FINISH。
-                4. FINISH 后，确保向用户输出完整的 Markdown 格式回答。
+                4. 当 planner_agent 输出 decision=FINISH 时：
+                   - 如果输出是 JSON 格式（包含 decision 和 answer 字段），提取 answer 字段内容
+                   - 如果输出已经是 Markdown 格式，直接使用
+                   - 确保最终向用户输出的是干净的 Markdown 格式回答，不包含任何 JSON 结构
 
                 只允许在 planner_agent、executor_agent 与 FINISH 之间做出选择。
                 """;
